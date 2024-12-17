@@ -90,9 +90,9 @@ function NavbarLink() {
             iconInactive: RiHome2Line,
         },
         {
-            title: 'Launcher',
-            href: '/launcher',
-            startsWith: '/launcher',
+            title: 'Launch',
+            href: '/launch',
+            startsWith: '/launch',
             iconActive: RiAddCircleFill,
             iconInactive: RiAddCircleLine,
         },

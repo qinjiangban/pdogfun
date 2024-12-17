@@ -19,15 +19,13 @@ Designed to simplify the creation of meme coins. Allows anyone to quickly and ea
 
 [https://github.com/qinjiangban/pdogfun](https://github.com/qinjiangban/pdogfun)
 
-# Preview Link (Optional):
+# Preview Link:
 
 [https://pdog.fun](https://pdog.fun)
 
 <!-- # Demo Video/Slide Deck Link (Optional):
+[Video](https://github.com/qinjiangban/pdogfun) -->
 
-[Video](https://github.com/qinjiangban/pdogfun)
+# Screenshots:
 
-# Screenshots (Optional):
-
-![img](https://avatars.githubusercontent.com/u/95474245?v=4) -->
-ontent.com/u/95474245?v=4) -->
+![img](https://github.com/qinjiangban/pdogfun/blob/main/public/lens/pdogfun-screenshots.jpeg?raw=true)
