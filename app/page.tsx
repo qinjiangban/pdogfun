@@ -7,7 +7,12 @@ export default function Home() {
   return (
     <div>
 
+
+      <Link href={`/storage`} className="btn btn-primary">storage</Link>
+
+
       <div className="hero bg-base-200 min-h-[calc(100vh-64px)]">
+
         <div className="hero-content text-center">
           <div className="max-w-md">
             <h1 className="text-5xl font-bold">PdogFun</h1>
@@ -17,7 +22,10 @@ export default function Home() {
             <Link href={`/home`} className="btn btn-primary">Get Started</Link>
           </div>
         </div>
+
       </div>
+
+
 
     </div>
   );

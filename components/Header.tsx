@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ConnectButton from "./ConnectButton";
 import ThemeSwap from "@/gui/ThemeSwap";
-import { RiAddCircleFill, RiAddCircleLine, RiHome2Fill, RiHome2Line, RiUserFill, RiUserLine } from "react-icons/ri";
+import { RiAddCircleFill, RiAddCircleLine, RiArrowLeftLine, RiHome2Fill, RiHome2Line, RiUserFill, RiUserLine } from "react-icons/ri";
 import { HiOutlineMenuAlt1 } from "react-icons/hi";
 export default function Header() {
     return (
@@ -16,6 +16,7 @@ export default function Header() {
 }
 function HeaderC() {
     const router = useRouter();
+    const pathname = usePathname();
 
     return (
         <div className="">
@@ -27,7 +28,7 @@ function HeaderC() {
 
                 <div className="navbar-start gap-1">
                     <div className="dropdown">
-                        <div tabIndex={0} role="button" className="btn btn-ghost btn-circle md:hidden">
+                        <div tabIndex={0} role="button" className="btn  btn-square md:hidden">
                             <HiOutlineMenuAlt1 className='w-8 h-8' />
                         </div>
                         <ul
@@ -45,6 +46,13 @@ function HeaderC() {
                             alt='Q'
                         />
                     </Link>
+
+                    {pathname && pathname.startsWith('/token') &&
+                        <button className="btn btn-square  btn-sm md:btn-md" onClick={() => router.back()} >
+                            <RiArrowLeftLine size={24} />
+                        </button>
+                    }
+
                 </div>
 
 
