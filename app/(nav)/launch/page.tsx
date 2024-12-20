@@ -2,13 +2,15 @@
 
 import React, { useState } from 'react';
 import { useAccount, useDeployContract } from 'wagmi';
-import { abi, bytecode } from './meme';
+import { deployContract, estimateGas } from '@wagmi/core'
+import { bytecode, memeAbi } from './meme';
 import { config } from '@/config/Provider';
 
 import { storageClient } from '@/lib/StorageNode';
 import { LensSVG } from '@/gui/LensSVG';
 import { FaSquareXTwitter, FaTelegram } from 'react-icons/fa6';
 import { RiGlobalLine } from 'react-icons/ri';
+import { parseEther } from 'viem';
 
 
 export default function MemeLauncher() {
@@ -24,61 +26,112 @@ export default function MemeLauncher() {
     const [xSite, setXSite] = useState('');
     const [telegramSite, setTelegramSite] = useState('');
     const [loading, setLoading] = useState(false);
-    const [uploadedData, setUploadedData] = useState<string | null>(null);
 
-    // 上传Logo
-    const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (event.target.files) {
-            setLoading(true);
-            const file = event.target.files[0];
-            try {
-                const { uri } = await storageClient.uploadFile(file);
-                const resolvedUrl = await storageClient.resolve(uri);
-                setLogoUrl(resolvedUrl);
-            } catch (error) {
-                console.error('Upload failed:', error);
-                alert('An error occurred while uploading the logo.');
-            } finally {
-                setLoading(false);
-            }
+    const [logoUrlDisplay, setLogoUrlDisplay] = useState<string | null>(null);
+    const [metadataUrlDisplay, setMetadataUrlDisplay] = useState<string | null>(null);
+    const [transactionHash, setTransactionHash] = useState<string | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
+
+    const [errors, setErrors] = useState({
+        name: false,
+        symbol: false,
+        initialSupply: false,
+        bio: false,
+        logo: false,
+    });
+
+    const validateInputs = () => {
+        const newErrors = {
+            name: !name.trim(),
+            symbol: !symbol.trim(),
+            initialSupply: initialSupply <= 0,
+            bio: !bio.trim(),
+            logo: !preview, // 以用户是否上传 logo 文件为依据
+        };
+        setErrors(newErrors);
+
+        // 返回是否通过验证
+        return !Object.values(newErrors).some((error) => error);
+    };
+
+    //上传logo后显示
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result as string); // 将结果保存到预览状态
+            };
+            reader.readAsDataURL(file); // 将文件读取为 Data URL
         }
     };
 
-    // 获取部署合约的钩子
-    const { deployContract } = useDeployContract({ config });
-
-
     const handleLaunch = async () => {
+        if (!validateInputs()) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
         setLoading(true);
-        const jsonData = {
-            name,
-            symbol,
-            initialSupply,
-            bio,
-            logo: logoUrl,
-            webSite,
-            lensSite,
-            xSite,
-            telegramSite,
-        };
+        let uploadedLogoUrl = logoUrl; // 记录上传的 Logo URL
 
         try {
+            // 如果有选择 Logo 文件，则上传
+            const logoInput = document.querySelector<HTMLInputElement>('input[name="logo"]');
+            if (logoInput?.files && logoInput.files[0]) {
+                const file = logoInput.files[0];
+                const { uri } = await storageClient.uploadFile(file);
+                uploadedLogoUrl = await storageClient.resolve(uri);
+                setLogoUrlDisplay(uploadedLogoUrl); // 更新展示用的 logo URL
+            }
+
+            // 准备 Metadata JSON 数据
+            const jsonData = {
+                name,
+                symbol,
+                initialSupply,
+                bio,
+                logo: uploadedLogoUrl,
+                webSite,
+                lensSite,
+                xSite,
+                telegramSite,
+            };
+
+            // 上传 Metadata JSON
             const { uri } = await storageClient.uploadAsJson(jsonData);
-            const resolvedUrl = await storageClient.resolve(uri);
-            setUploadedData(resolvedUrl); // Store the uploaded metadata URL
+            const metadataUrl = await storageClient.resolve(uri);
+            setMetadataUrlDisplay(metadataUrl); // 更新展示用的 metadata URL
+
+            // 部署 ERC20 合约
+            //const { deployContract,data } = useDeployContract({ config })
+            const hash = await deployContract(config, {
+                abi: memeAbi,
+                bytecode: bytecode as `0x${string}`,
+                args: [name, symbol, BigInt(initialSupply), metadataUrl],
+            })
+
+            // 获取交易哈希
+            setTransactionHash(await hash);
+
         } catch (error) {
-            console.error('Upload failed:', error);
-            alert('An error occurred while uploading the data.');
+            console.error('An error occurred:', error);
+            alert('An error occurred during the process.');
         } finally {
             setLoading(false);
         }
     };
 
+
+
+
     return (
         <div className="min-h-[calc(100vh-64px)] p-2 md:p-6 mb-12 font-sans bg-base-200">
+
             <h1 className="text-3xl font-bold text-center mb-6">🚀 Meme Launch 🚀</h1>
+
             <div className="max-w-3xl mx-auto bg-base-100 p-4 md:p-6 rounded-3xl shadow-md border flex flex-col gap-4">
-            <div>
+                <div>
                     <label className="block mb-1 font-semibold">Name</label>
                     <input
                         type="text"
@@ -86,7 +139,7 @@ export default function MemeLauncher() {
                         placeholder="Input Name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                        className="input input-bordered w-full"
+                         className={`input input-bordered w-full ${errors.name ? 'border-red-500' : ''}`}
                     />
                 </div>
 
@@ -98,7 +151,7 @@ export default function MemeLauncher() {
                         placeholder="Input Symbol"
                         value={symbol}
                         onChange={(e) => setSymbol(e.target.value)}
-                        className="input input-bordered w-full"
+                        className={`input input-bordered w-full ${errors.symbol ? 'border-red-500' : ''}`}
                     />
                 </div>
 
@@ -110,7 +163,7 @@ export default function MemeLauncher() {
                         placeholder="0"
                         value={initialSupply}
                         onChange={(e) => setInitialSupply(Number(e.target.value))}
-                        className="input input-bordered w-full"
+                        className={`input input-bordered w-full ${errors.initialSupply ? 'border-red-500' : ''}`}
                     />
                 </div>
 
@@ -121,17 +174,18 @@ export default function MemeLauncher() {
                         placeholder="Input Bio"
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
-                        className="textarea textarea-bordered w-full h-24"
+                        className={`textarea textarea-bordered w-full h-24 ${errors.bio ? 'border-red-500' : ''}`}
                     />
                 </div>
 
                 <div>
                     <label className="block mb-1 font-semibold">Logo</label>
+                    {preview && (<img src={preview} alt="Preview" className="w-32 h-32 object-cover border rounded-md" />)}
                     <input
                         type="file"
                         name="logo"
-                        className="file-input file-input-bordered w-full"
-                        onChange={handleLogoUpload}
+                        className={`file-input file-input-bordered w-full mt-2 ${errors.logo ? 'border-red-500' : ''}`}
+                        onChange={handleFileChange}
                     />
                 </div>
 
@@ -143,6 +197,7 @@ export default function MemeLauncher() {
                         <RiGlobalLine className="w-6 h-6" />
                         <input
                             type="text"
+                            className="grow"
                             name="webSite"
                             placeholder="Web Site"
                             value={webSite}
@@ -153,6 +208,7 @@ export default function MemeLauncher() {
                         <LensSVG />
                         <input
                             type="text"
+                            className="grow"
                             name="lensSite"
                             placeholder="Lens Site"
                             value={lensSite}
@@ -163,6 +219,7 @@ export default function MemeLauncher() {
                         <FaSquareXTwitter className="w-6 h-6" />
                         <input
                             type="text"
+                            className="grow"
                             name="xSite"
                             placeholder="X Site"
                             value={xSite}
@@ -174,6 +231,7 @@ export default function MemeLauncher() {
                         <FaTelegram className="w-6 h-6" />
                         <input
                             type="text"
+                            className="grow"
                             name="telegramSite"
                             placeholder="Telegram Site"
                             value={telegramSite}
@@ -191,19 +249,36 @@ export default function MemeLauncher() {
                     </p>
                 )}
 
-                {/* Show uploaded metadata URL */}
-                {uploadedData && (
-                    <div className="mt-6 text-center">
-                        <p>Successfully uploaded! View your data:</p>
-                        <a href={uploadedData} target="_blank" rel="noopener noreferrer" className="text-blue-500">
-                            {uploadedData}
+            </div>
+            <div className="mt-6">
+                {logoUrlDisplay && (
+                    <div className="text-center">
+                        <p>Logo successfully uploaded! View your logo:</p>
+                        <a href={logoUrlDisplay} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                            {logoUrlDisplay}
                         </a>
                     </div>
                 )}
 
+                {metadataUrlDisplay && (
+                    <div className="text-center mt-4">
+                        <p>Metadata JSON successfully uploaded! View your data:</p>
+                        <a href={metadataUrlDisplay} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                            {metadataUrlDisplay}
+                        </a>
+                    </div>
+                )}
 
-
+                {transactionHash && (
+                    <div className="text-center mt-6">
+                        <p>Contract successfully deployed! View your contract transaction:</p>
+                        <a href={`https://block-explorer.testnet.lens.dev/tx/${transactionHash}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                            {transactionHash}
+                        </a>
+                    </div>
+                )}
             </div>
+
         </div>
     );
 }
