@@ -2,14 +2,13 @@
 
 import { LensSVG } from "@/gui/LensSVG";
 import { storageClient } from "@/lib/StorageNode";
-import { AddressTruncate } from "@/utils/AddressTruncate";
+import {  } from "@/utils/truncatedAddress";
 import Link from "next/link";
 import { FaSquareXTwitter, FaTelegram } from "react-icons/fa6";
-import { HiOutlineCube } from "react-icons/hi";
 import { RiGlobalLine } from "react-icons/ri";
 
 export default async function page({ params }) {
-  const metadataUrl = await storageClient.resolve(`${params.key}`);
+  const metadataUrl = storageClient.resolve(`${params.key}`);
 
   const response = await fetch(`https://storage-api.testnet.lens.dev/${params.key}`);
 
@@ -31,6 +30,7 @@ export default async function page({ params }) {
             placeholder="Input Name"
             value={data.name && data.name}
             className="input input-bordered w-full"
+            disabled 
           />
         </div>
 
@@ -42,6 +42,7 @@ export default async function page({ params }) {
             placeholder="Input Symbol"
             value={data.symbol && data.symbol}
             className="input input-bordered w-full"
+            disabled 
           />
         </div>
 
@@ -53,6 +54,7 @@ export default async function page({ params }) {
             placeholder="0"
             value={data.initialSupply}
             className="input input-bordered w-full"
+            disabled 
           />
         </div>
 

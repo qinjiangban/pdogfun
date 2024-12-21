@@ -1,12 +1,12 @@
 'use client'
 
-import TokenData from "../TokenData";
-import TradingViewWidget from "../TradingViewWidget";
-import Swap from "../Swap";
-import BondingCurve from "../BondingCurve";
-import LatestTrades from "../LatestTrades";
-import Comments from "../Comments";
-import PositionRanking from "../PositionRanking";
+import TokenData from "./_components/TokenData";
+import TradingViewWidget from "./_components/TradingViewWidget";
+import Swap from "./_components/Swap";
+import BondingCurve from "./_components/BondingCurve";
+import LatestTrades from "./_components/LatestTrades";
+import Comments from "./_components/Comments";
+import PositionRanking from "./_components/PositionRanking";
 
 export default function page({ params }) {
   return (
@@ -14,8 +14,8 @@ export default function page({ params }) {
 
       <div className="flex flex-col lg:flex-row gap-2 md:gap-4">
         <div className="flex w-auto lg:w-2/3 ... gap-2 md:gap-4 flex-col-reverse md:flex-col">
-          <TradingViewWidget props={params} />
-          <TokenData params={params.contract} />
+          <TradingViewWidget props={params.contract} />
+          <TokenData params={params} />
         </div>
         <div className=" hidden md:flex flex-1 md:flex-row lg:flex-col w-auto lg:w-md gap-2 md:gap-4 ...">
           <Swap />

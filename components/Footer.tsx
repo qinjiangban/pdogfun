@@ -18,10 +18,8 @@ export default function Footer() {
                     <Link href={`/terms`} className="hover:link "> terms</Link>
                 </nav>
                 <nav className="grid-flow-col gap-4 sm:place-self-center sm:justify-self-end">
-                    <Link href="https://www.lens.xyz" className=" hover:text-primary " target='_blank'>
-                        <RiGlobalLine className="w-6 h-6 " />
-                    </Link>
-                    <Link href="https://share.lens.xyz/u/lens/lens" className="hover:text-primary " target='_blank'>
+
+                    <Link href="https://share.lens.xyz/u/lens/pdogfun" className="hover:text-primary " target='_blank'>
                         <LensSVG />
                     </Link>
 {/*                     <Link href="https://x.com/LensProtocol" className="hover:text-primary " target='_blank'>

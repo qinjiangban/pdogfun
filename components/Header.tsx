@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import ConnectButton from "./ConnectButton";
 import ThemeSwap from "@/gui/ThemeSwap";
 import { RiAddCircleFill, RiAddCircleLine, RiArrowLeftLine, RiHome2Fill, RiHome2Line, RiUserFill, RiUserLine } from "react-icons/ri";
-import { HiOutlineMenuAlt1 } from "react-icons/hi";
+import { HiOutlineMenuAlt1, HiOutlineMenuAlt3 } from "react-icons/hi";
 export default function Header() {
     return (
         <>
@@ -27,16 +27,7 @@ function HeaderC() {
 
 
                 <div className="navbar-start gap-1">
-                    <div className="dropdown">
-                        <div tabIndex={0} role="button" className="btn  btn-square md:hidden">
-                            <HiOutlineMenuAlt1 className='w-8 h-8' />
-                        </div>
-                        <ul
-                            tabIndex={0}
-                            className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow gap-2">
-                            <NavbarLink />
-                        </ul>
-                    </div>
+       
                     <Link href={`/`} className="avatar bg-black rounded-full w-12 h-12 hover:border">
                         <Image
                             src='/favicon.ico'
@@ -63,8 +54,14 @@ function HeaderC() {
                 </div>
 
                 <div className="navbar-end gap-2 px-2">
-                    <ThemeSwap />
-
+                    <div className="dropdown dropdown-end">
+                        <div tabIndex={0} role="button" className="btn  btn-square md:hidden">
+                            <HiOutlineMenuAlt3  className='w-8 h-8' />
+                        </div>
+                        <ul tabIndex={0}  className="menu menu-lg dropdown-content bg-base-100 rounded-box border shadow z-[1] mt-3 w-52 p-2  gap-2">
+                            <NavbarLink />
+                        </ul>
+                    </div>
                     <ConnectButton />
                 </div>
 
@@ -118,7 +115,7 @@ function NavbarLink() {
                 <li key={link.href}>
                     <Link
                         href={link.href}
-                        className={`rounded-full py-2 px-3 text-base-content hover:bg-[var(--button-bg)]  ${pathname && pathname.startsWith(link.startsWith) && "bg-[var(--button-bg)]  "}`}
+                        className={` btn btn-ghost text-base-content justify-start md:justify-center bg-zinc-400/20  ${pathname && pathname.startsWith(link.startsWith) && "bg-[var(--button-bg)]  "}`}
                     >
                         {pathname && pathname.startsWith(link.startsWith) ? <link.iconActive className="size-8" /> : <link.iconInactive className="size-8" />}
                         <span className=" text-lg">
@@ -127,6 +124,7 @@ function NavbarLink() {
                     </Link>
                 </li>
             ))}
+            <li><ThemeSwap /></li>
 
         </>
     )

@@ -8,7 +8,7 @@ export default function Home() {
     <div>
 
 
-      <Link href={`/storage`} className="btn btn-primary">storage</Link>
+      {/* <Link href={`/storage`} className="btn btn-primary">storage</Link> */}
 
 
       <div className="hero bg-base-200 min-h-[calc(100vh-64px)]">
@@ -24,6 +24,9 @@ export default function Home() {
         </div>
 
       </div>
+
+
+
 
 
 
