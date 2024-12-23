@@ -558,6 +558,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@matterlabs/hardhat-zksync-deploy@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "@matterlabs/hardhat-zksync-deploy@npm:1.6.0"
+  dependencies:
+    "@matterlabs/hardhat-zksync-solc": ^1.2.5
+    chai: ^4.3.4
+    chalk: ^4.1.2
+    fs-extra: ^11.2.0
+    glob: ^10.4.1
+    lodash: ^4.17.21
+    sinon: ^18.0.0
+    sinon-chai: ^3.7.0
+    ts-morph: ^22.0.0
+  peerDependencies:
+    ethers: ^6.12.2
+    hardhat: ^2.22.5
+    zksync-ethers: ^6.11.2
+  checksum: d5435c1563dc3d9977eb8d510444b94f1cee587b938d0b700c62c23c984af900c9eee896da09027f66fd02a28e7b6bb5f632a5114ce15defaed89a7497c47fb5
+  languageName: node
+  linkType: hard
+
 "@matterlabs/hardhat-zksync-ethers@npm:^1.1.0":
   version: 1.1.0
   resolution: "@matterlabs/hardhat-zksync-ethers@npm:1.1.0"
@@ -612,6 +633,27 @@ __metadata:
   peerDependencies:
     hardhat: ^2.22.5
   checksum: 138eefcc7ab923ce61e5d789626b12c9a6607d3686ddfe2b55a89f73626912a253742a3ec143d4c5a611c7e3e0e41d45f59394f27a0b1aaad5f4124dd1e1d902
+  languageName: node
+  linkType: hard
+
+"@matterlabs/hardhat-zksync-solc@npm:^1.2.5":
+  version: 1.2.5
+  resolution: "@matterlabs/hardhat-zksync-solc@npm:1.2.5"
+  dependencies:
+    "@nomiclabs/hardhat-docker": ^2.0.2
+    chai: ^4.3.4
+    chalk: ^4.1.2
+    debug: ^4.3.5
+    dockerode: ^4.0.2
+    fs-extra: ^11.2.0
+    proper-lockfile: ^4.1.2
+    semver: ^7.6.2
+    sinon: ^18.0.0
+    sinon-chai: ^3.7.0
+    undici: ^6.18.2
+  peerDependencies:
+    hardhat: ^2.22.5
+  checksum: aadb03bfdf4402e2a113a9adf86ecf426b6f19b00b9945d0e7c5ab75f134be3d102375f206d44682dbe91ad62b9fa68e83dd9ee1dd2e4a0610711c13e90304a6
   languageName: node
   linkType: hard
 
@@ -4853,6 +4895,8 @@ __metadata:
   resolution: "lens-network-hardhat-boilerplate@workspace:."
   dependencies:
     "@matterlabs/hardhat-zksync": ^1.1.0
+    "@matterlabs/hardhat-zksync-deploy": ^1.6.0
+    "@matterlabs/hardhat-zksync-solc": ^1.2.5
     "@nomicfoundation/hardhat-chai-matchers": ^2.0.0
     "@nomicfoundation/hardhat-ethers": ^3.0.0
     "@nomicfoundation/hardhat-ignition": ^0.15.0

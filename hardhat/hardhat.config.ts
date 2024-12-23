@@ -1,5 +1,6 @@
 import "@matterlabs/hardhat-zksync";
-
+import "@matterlabs/hardhat-zksync-solc";
+import "@matterlabs/hardhat-zksync-deploy";
 import "@nomicfoundation/hardhat-chai-matchers";
 import "@nomicfoundation/hardhat-toolbox";
 import "@nomiclabs/hardhat-solhint";
@@ -7,6 +8,9 @@ import "@nomiclabs/hardhat-solhint";
 import { HardhatUserConfig } from "hardhat/config";
 
 const config: HardhatUserConfig = {
+  paths: {
+    sources: "./contracts", // Your contracts directory
+  },
   solidity: {
     version: "0.8.24",
   },
@@ -18,9 +22,8 @@ const config: HardhatUserConfig = {
     lensTestnet: {
       chainId: 37111,
       ethNetwork: "sepolia", // or a Sepolia RPC endpoint from Infura/Alchemy/Chainstack etc.
-      url: "https://api.staging.lens.zksync.dev",
-      verifyURL:
-        "https://api-explorer-verify.staging.lens.zksync.dev/contract_verification",
+      url: "https://rpc.testnet.lens.dev",
+      verifyURL:"https://block-explorer-verify.testnet.lens.dev/contract_verificatio",
       zksync: true,
     },
     hardhat: {
