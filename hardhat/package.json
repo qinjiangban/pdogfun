@@ -5,7 +5,7 @@
     "clean:upgradable": "rimraf ./.upgradable/zkSync-era-test-node.json",
     "clean:artifacts": "hardhat clean",
     "clean": "yarn clean:artifacts && yarn clean:upgradable",
-    "deploy": "hardhat deploy-zksync",
+    "deploy": "hardhat ./deploy/deploy.ts",
     "lint": "hardhat check",
     "test": "yarn clean:upgradable && hardhat test"
   },

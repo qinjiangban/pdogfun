@@ -17,7 +17,7 @@ export default function page({ params }) {
           <TradingViewWidget props={params.contract} />
           <TokenData params={params} />
         </div>
-        <div className=" hidden md:flex flex-1 md:flex-row lg:flex-col w-auto lg:w-md gap-2 md:gap-4 ...">
+        <div className=" hidden md:flex flex-1 md:flex-col w-auto lg:w-md gap-2 md:gap-4 ...">
           <Swap />
           <BondingCurve />
           <LatestTrades />
