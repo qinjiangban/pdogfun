@@ -1,7 +1,7 @@
 'use client'
 import { config } from "@/config/Provider"
 import { useAccount } from "wagmi"
-import Nav from "./Nav"
+import Nav from "./UserNav"
 import UserData from "./UserData"
 
 

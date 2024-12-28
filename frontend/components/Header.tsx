@@ -55,7 +55,7 @@ function HeaderC() {
 
                 <div className="navbar-end gap-2 px-2">
                     <div className="dropdown dropdown-end">
-                        <div tabIndex={0} role="button" className="btn  btn-square md:hidden">
+                        <div tabIndex={0} role="button" className="btn  btn-square flex md:hidden">
                             <HiOutlineMenuAlt3  className='w-8 h-8' />
                         </div>
                         <ul tabIndex={0}  className="menu menu-lg dropdown-content bg-base-100 rounded-box border shadow z-[1] mt-3 w-52 p-2  gap-2">

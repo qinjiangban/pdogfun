@@ -26,7 +26,9 @@ export default function Home() {
       </div>
 
 
-
+      <Link href={`/mint`} className="btn btn-primary">mint</Link>
+      {/*       <Link href={`/singn`} className="btn btn-primary">singn</Link> 
+      <Link href={`/singn/accounts`} className="btn btn-primary">singn/accounts</Link>  */}
 
 
 
