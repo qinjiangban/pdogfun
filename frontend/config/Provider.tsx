@@ -1,6 +1,5 @@
 "use client"
 import { WagmiProvider, createConfig, http } from "wagmi";
-import { mainnet,sepolia } from "wagmi/chains";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { getDefaultConfig } from "connectkit";
 import { lenstestnet } from "./customChains";
@@ -8,10 +7,9 @@ import ConnectKit from "./ConnectKit";
 import { ThemeProvider } from "next-themes";
 export const config = createConfig(
   getDefaultConfig({
-    chains: [lenstestnet,sepolia],
+    chains: [lenstestnet],
     transports: {
       [lenstestnet.id]: http(`${lenstestnet?.rpcUrls?.default}`),
-      [sepolia.id]: http()
     },
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '123',
     appName: "PdogFun",
