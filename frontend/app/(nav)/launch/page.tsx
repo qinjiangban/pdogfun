@@ -112,7 +112,7 @@ export default function MemeLauncher() {
             })
 
             // 获取交易哈希
-            setTransactionHash(await hash);
+            setTransactionHash(hash);
 
         } catch (error) {
             console.error('An error occurred:', error);
