@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAccount, useDeployContract } from 'wagmi';
+import { useAccount, useDeployContract, useSignMessage } from 'wagmi';
 import { deployContract, estimateGas } from '@wagmi/core'
 import { bytecode, memeAbi } from './meme';
 import { config } from '@/config/Provider';
@@ -10,11 +10,15 @@ import { storageClient } from '@/lib/StorageNode';
 import { LensSVG } from '@/gui/LensSVG';
 import { FaSquareXTwitter, FaTelegram } from 'react-icons/fa6';
 import { RiGlobalLine } from 'react-icons/ri';
-import { parseEther } from 'viem';
 
-
+interface Signer {
+    signMessage({ message }): Promise<string>;
+  }
 export default function MemeLauncher() {
     const { address } = useAccount({ config });
+  
+    const { data: wagmiSigner } = useSignMessage({ config });
+    const signer = wagmiSigner as unknown as Signer;
 
     const [name, setName] = useState('');
     const [symbol, setSymbol] = useState('');
@@ -113,14 +117,31 @@ export default function MemeLauncher() {
 
             // 获取交易哈希
             setTransactionHash(hash);
-
+            alert('Contract deployed successfully!');
         } catch (error) {
-            console.error('An error occurred:', error);
-            alert('An error occurred during the process.');
+            console.error('An error occurred during the process:', error);
+
+            // 删除 logoUrl 和 metadataUrl
+            try {
+                if (uploadedLogoUrl) {
+                    const success = await storageClient.delete(uploadedLogoUrl, signer);
+                    if (success) console.log(`Deleted logo URL: ${uploadedLogoUrl}`);
+                }
+
+                if (metadataUrlDisplay) {
+                    const success = await storageClient.delete(metadataUrlDisplay, signer);
+                    if (success) console.log(`Deleted metadata URL: ${metadataUrlDisplay}`);
+                }
+            } catch (deleteError) {
+                console.error('Failed to delete resources:', deleteError);
+            }
+
+            alert('An error occurred during the process. Uploaded resources have been deleted.');
         } finally {
             setLoading(false);
         }
     };
+
 
 
 
@@ -139,7 +160,7 @@ export default function MemeLauncher() {
                         placeholder="Input Name"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
-                         className={`input input-bordered w-full ${errors.name ? 'border-red-500' : ''}`}
+                        className={`input input-bordered w-full ${errors.name ? 'border-red-500' : ''}`}
                     />
                 </div>
 
@@ -161,6 +182,7 @@ export default function MemeLauncher() {
                         type="number"
                         name="initialSupply"
                         placeholder="0"
+                        min={1}
                         value={initialSupply}
                         onChange={(e) => setInitialSupply(Number(e.target.value))}
                         className={`input input-bordered w-full ${errors.initialSupply ? 'border-red-500' : ''}`}

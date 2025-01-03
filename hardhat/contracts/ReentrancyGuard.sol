@@ -1,19 +1,4 @@
-/*
-    
-   ██████  ██████   ██████  ██   ██ ██████   ██████   ██████  ██   ██    ██████  ███████ ██    ██
-  ██      ██    ██ ██    ██ ██  ██  ██   ██ ██    ██ ██    ██ ██  ██     ██   ██ ██      ██    ██
-  ██      ██    ██ ██    ██ █████   ██████  ██    ██ ██    ██ █████      ██   ██ █████   ██    ██
-  ██      ██    ██ ██    ██ ██  ██  ██   ██ ██    ██ ██    ██ ██  ██     ██   ██ ██       ██  ██
-   ██████  ██████   ██████  ██   ██ ██████   ██████   ██████  ██   ██ ██ ██████  ███████   ████
-  
-  Find any smart contract, and build your project faster: https://www.cookbook.dev
-  Twitter: https://twitter.com/cookbook_dev
-  Discord: https://discord.gg/cookbookdev
-  
-  Find this contract on Cookbook: https://www.cookbook.dev/contracts/Pump.Fun.Contracts-PumpFun/?utm=code
-  */
-  
-  // SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v5.0.0) (utils/ReentrancyGuard.sol)
 
 pragma solidity ^0.8.20;

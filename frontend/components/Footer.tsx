@@ -9,30 +9,28 @@ export default function Footer() {
         <>
             <footer className="footer bg-base-100 text-content items-center p-4 border-t gap-4 sm:grid-flow-col">
 
-                <nav className="grid-flow-col gap-4 sm:place-self-center sm:justify-self-start text-gray-400">
-                    <p>© {new Date().getFullYear()} pdog.fun</p>
-                </nav>
-                <nav className="grid-flow-col gap-4 sm:place-self-center sm:justify-self-center text-gray-400">
-                    <Link href={`/fqa`} className="hover:link "> fqa</Link>
-                    <Link href={`/privacy`} className="hover:link "> privacy</Link>
-                    <Link href={`/terms`} className="hover:link "> terms</Link>
-                </nav>
-                <nav className="grid-flow-col gap-4 sm:place-self-center sm:justify-self-end">
-
+                <nav className="grid-flow-col gap-4 sm:place-self-center sm:justify-self-start ">
                     <Link href="https://share.lens.xyz/u/lens/pdogfun" className="hover:text-primary " target='_blank'>
                         <LensSVG />
                     </Link>
-{/*                     <Link href="https://x.com/LensProtocol" className="hover:text-primary " target='_blank'>
-                        <FaSquareXTwitter className="w-6 h-6 " />
-                    </Link> */}
                     <Link href="https://github.com/qinjiangban/pdogfun" className="hover:text-primary " target='_blank'>
                         <FaGithub className="w-6 h-6 " />
                     </Link>
                 </nav>
+                
+                <nav className="grid-flow-col gap-4 sm:place-self-center sm:justify-self-center text-gray-400">
+                    <p>© {new Date().getFullYear()} pdog.fun</p>
+                </nav>
+                
+                <nav className="grid-flow-col gap-4 sm:place-self-center sm:justify-self-end text-gray-400">
+                    <Link href={`/fqa`} className="hover:link "> fqa</Link>
+                    <Link href={`/privacy`} className="hover:link "> privacy</Link>
+                    <Link href={`/terms`} className="hover:link "> terms</Link>
+                </nav>
 
             </footer>
 
-            <div role="alert" className="alert alert-warning">
+            <div role="alert" className="alert alert-warning rounded-none">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6 shrink-0 stroke-current"

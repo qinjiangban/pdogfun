@@ -19,16 +19,15 @@ export default function Home() {
             <p className="py-6">
               Designed to simplify the creation of meme coins. Allows anyone to quickly and easily launch their own meme token without deep technical knowledge.
             </p>
-            <Link href={`/home`} className="btn btn-primary">Get Started</Link>
+            <Link href={`/home`} className="btn btn-primary m-1">Start Trading</Link>
+            <Link href={`/launch`} className="btn btn-primary m-1">Launch Meme</Link>
           </div>
         </div>
 
       </div>
 
 
-      <Link href={`/mint`} className="btn btn-primary">mint</Link>
-      <Link href={`/singn`} className="btn btn-primary">singn</Link>
-      <Link href={`/singn/accounts`} className="btn btn-primary">singn/accounts</Link>
+      <Link href={`/test`} className="btn btn-primary">test</Link>
 
 
 
