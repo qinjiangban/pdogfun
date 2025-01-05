@@ -108,11 +108,11 @@ export default function MemeLauncher() {
             setMetadataUrlDisplay(metadataUrl); // 更新展示用的 metadata URL
 
             // 部署 ERC20 合约
-            //const { deployContract,data } = useDeployContract({ config })
-            const hash = await deployContract(config, {
+            //const { deployContract} = useDeployContract({ config })
+            const hash = await deployContract(config,{
                 abi: memeAbi,
-                bytecode: bytecode as `0x${string}`,
                 args: [name, symbol, BigInt(initialSupply), metadataUrl],
+                bytecode: bytecode as `0x${string}`,
             })
 
             // 获取交易哈希

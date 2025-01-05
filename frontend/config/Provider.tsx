@@ -9,7 +9,7 @@ export const config = createConfig(
   getDefaultConfig({
     chains: [lenstestnet],
     transports: {
-      [lenstestnet.id]: http(`${lenstestnet?.rpcUrls?.default}`),
+      [lenstestnet.id]: http(lenstestnet.rpcUrls.default.http[0]),
     },
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '123',
     appName: "PdogFun",
@@ -22,7 +22,9 @@ export const config = createConfig(
 const queryClient = new QueryClient();
 
 
+
 export default function Provider({ children }: { children: React.ReactNode; }) {
+
   return (
     <ThemeProvider>
       <WagmiProvider config={config}>
