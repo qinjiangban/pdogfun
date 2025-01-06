@@ -1,25 +1,17 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useAccount, useDeployContract, useSignMessage } from 'wagmi';
-import { bytecode, memeAbi } from './meme';
+import React, { useEffect, useState } from 'react';
+import { useAccount } from 'wagmi';
+import { bytecode, memeAbi } from '../../../database/meme';
 import { config } from '@/config/Provider';
 import { storageClient } from '@/lib/StorageNode';
 import { LensSVG } from '@/gui/LensSVG';
 import { FaSquareXTwitter, FaTelegram } from 'react-icons/fa6';
 import { RiGlobalLine } from 'react-icons/ri';
-import { account, walletClient } from '@/config/viem';
-import { walletOnly } from '@lens-protocol/storage-node-client';
+import { account, walletClient } from '@/config/walletClient';
 
-interface Signer {
-    signMessage({ message }): Promise<string>;
-  }
-export default function MemeLauncher() {
+export default function page() {
     const { address } = useAccount({ config });
-    const acl = walletOnly(address as `0x${string}`);
-    const { data: wagmiSigner } = useSignMessage({ config });
-    const signer = wagmiSigner as unknown as Signer;
-
     const [name, setName] = useState('');
     const [symbol, setSymbol] = useState('');
     const [initialSupply, setInitialSupply] = useState(0);
@@ -62,15 +54,23 @@ export default function MemeLauncher() {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload a valid image file.');
+                return;
+            }
+            if (file.size > 5 * 1024 * 1024) { // 限制 5MB
+                alert('File size should not exceed 5MB.');
+                return;
+            }
             const reader = new FileReader();
             reader.onloadend = () => {
-                setPreview(reader.result as string); // 将结果保存到预览状态
+                setPreview(reader.result as string);
             };
-            reader.readAsDataURL(file); // 将文件读取为 Data URL
+            reader.readAsDataURL(file);
         }
     };
 
-    const handleLaunch = async () => {
+    const handleLaunch =  async () => {
         if (!validateInputs()) {
             alert('Please fill in all required fields.');
             return;
@@ -84,7 +84,7 @@ export default function MemeLauncher() {
             const logoInput = document.querySelector<HTMLInputElement>('input[name="logo"]');
             if (logoInput?.files && logoInput.files[0]) {
                 const file = logoInput.files[0];
-                const { uri } = await storageClient.uploadFile(file, { acl });
+                const { uri } = await storageClient.uploadFile(file);
                 uploadedLogoUrl = await storageClient.resolve(uri);
                 setLogoUrlDisplay(uploadedLogoUrl); // 更新展示用的 logo URL
             }
@@ -103,50 +103,28 @@ export default function MemeLauncher() {
             };
 
             // 上传 Metadata JSON
-            const { uri } = await storageClient.uploadAsJson(jsonData, { acl });
+            const { uri } = await storageClient.uploadAsJson(jsonData);
             const metadataUrl = await storageClient.resolve(uri);
             setMetadataUrlDisplay(metadataUrl); // 更新展示用的 metadata URL
 
             // 部署 ERC20 合约
-            //const { deployContract} = useDeployContract({ config })
-/*             const hash = await deployContract(config,{
+            const hash = await walletClient.deployContract({
                 abi: memeAbi,
                 args: [name, symbol, BigInt(initialSupply), metadataUrl],
-                bytecode: bytecode as `0x${string}`,
-            }) */
-            const hash = await walletClient.deployContract( {
-                abi: memeAbi ,
-                args: [name, symbol, BigInt(initialSupply), metadataUrl],
-                bytecode: bytecode as `0x${string}`,
-                account: account
+                bytecode: bytecode,
+                account: account as `0x${string}`
             });
             // 获取交易哈希
             setTransactionHash(hash);
             alert('Contract deployed successfully!');
         } catch (error) {
-            console.error('An error occurred during the process:', error);
-
-            // 删除 logoUrl 和 metadataUrl
-            try {
-                if (uploadedLogoUrl) {
-                    const success = await storageClient.delete(uploadedLogoUrl, signer);
-                    if (success) console.log(`Deleted logo URL: ${uploadedLogoUrl}`);
-                }
-
-                if (metadataUrlDisplay) {
-                    const success = await storageClient.delete(metadataUrlDisplay, signer);
-                    if (success) console.log(`Deleted metadata URL: ${metadataUrlDisplay}`);
-                }
-            } catch (deleteError) {
-                console.error('Failed to delete resources:', deleteError);
-            }
-
-            alert('An error occurred during the process. Uploaded resources have been deleted.');
+            console.error('Error during launch:', error);
+            alert('An error occurred during the launch process. Please try again.');
         } finally {
             setLoading(false);
         }
-    };
 
+    };
 
 
 
