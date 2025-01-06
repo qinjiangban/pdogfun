@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import ConnectButton from "./ConnectButton";
-import ThemeSwap from "@/gui/ThemeSwap";
+import ThemeSwap from "@/components/ThemeSwap";
 import { RiAddCircleFill, RiAddCircleLine, RiArrowLeftLine, RiHome2Fill, RiHome2Line, RiUserFill, RiUserLine } from "react-icons/ri";
 import { HiOutlineMenuAlt1, HiOutlineMenuAlt3 } from "react-icons/hi";
 export default function Header() {
