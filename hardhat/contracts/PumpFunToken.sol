@@ -2,22 +2,17 @@
 pragma solidity ^0.8.0;
 
 contract PumpFunToken {
-    // 代币基本信息
     string public name;
     string public symbol;
     uint256 public totalSupply;
     string public metadataUrl;
 
-    // 每个地址的余额映射
     mapping(address => uint256) public balanceOf;
-    // 授权转账额度映射
     mapping(address => mapping(address => uint256)) public allowance;
 
-    // 事件
     event Transfer(address indexed from, address indexed to, uint256 value);
     event Approval(address indexed owner, address indexed spender, uint256 value);
 
-    // 构造函数，设置代币基本信息和初始供应
     constructor(
         string memory _name,
         string memory _symbol,
@@ -29,13 +24,11 @@ contract PumpFunToken {
         totalSupply = _initialSupply;
         metadataUrl = _metadataUrl;
 
-        // 将初始供应分配给合约的部署者
         balanceOf[msg.sender] = _initialSupply;
 
         emit Transfer(address(0), msg.sender, _initialSupply);
     }
 
-    // 转账函数
     function transfer(address _to, uint256 _value) public returns (bool success) {
         require(balanceOf[msg.sender] >= _value, "Insufficient balance");
         require(_to != address(0), "Invalid recipient address");
@@ -47,7 +40,6 @@ contract PumpFunToken {
         return true;
     }
 
-    // 授权函数
     function approve(address _spender, uint256 _value) public returns (bool success) {
         require(_spender != address(0), "Invalid spender address");
 
@@ -56,7 +48,6 @@ contract PumpFunToken {
         return true;
     }
 
-    // 授权转账函数
     function transferFrom(
         address _from,
         address _to,

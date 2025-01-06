@@ -2,21 +2,21 @@
 
 import React, { useState } from 'react';
 import { useAccount, useDeployContract, useSignMessage } from 'wagmi';
-import { deployContract, estimateGas } from '@wagmi/core'
 import { bytecode, memeAbi } from './meme';
 import { config } from '@/config/Provider';
-
 import { storageClient } from '@/lib/StorageNode';
 import { LensSVG } from '@/gui/LensSVG';
 import { FaSquareXTwitter, FaTelegram } from 'react-icons/fa6';
 import { RiGlobalLine } from 'react-icons/ri';
+import { account, walletClient } from '@/config/viem';
+import { walletOnly } from '@lens-protocol/storage-node-client';
 
 interface Signer {
     signMessage({ message }): Promise<string>;
   }
 export default function MemeLauncher() {
     const { address } = useAccount({ config });
-  
+    const acl = walletOnly(address as `0x${string}`);
     const { data: wagmiSigner } = useSignMessage({ config });
     const signer = wagmiSigner as unknown as Signer;
 
@@ -84,7 +84,7 @@ export default function MemeLauncher() {
             const logoInput = document.querySelector<HTMLInputElement>('input[name="logo"]');
             if (logoInput?.files && logoInput.files[0]) {
                 const file = logoInput.files[0];
-                const { uri } = await storageClient.uploadFile(file);
+                const { uri } = await storageClient.uploadFile(file, { acl });
                 uploadedLogoUrl = await storageClient.resolve(uri);
                 setLogoUrlDisplay(uploadedLogoUrl); // 更新展示用的 logo URL
             }
@@ -103,18 +103,23 @@ export default function MemeLauncher() {
             };
 
             // 上传 Metadata JSON
-            const { uri } = await storageClient.uploadAsJson(jsonData);
+            const { uri } = await storageClient.uploadAsJson(jsonData, { acl });
             const metadataUrl = await storageClient.resolve(uri);
             setMetadataUrlDisplay(metadataUrl); // 更新展示用的 metadata URL
 
             // 部署 ERC20 合约
             //const { deployContract} = useDeployContract({ config })
-            const hash = await deployContract(config,{
+/*             const hash = await deployContract(config,{
                 abi: memeAbi,
                 args: [name, symbol, BigInt(initialSupply), metadataUrl],
                 bytecode: bytecode as `0x${string}`,
-            })
-
+            }) */
+            const hash = await walletClient.deployContract( {
+                abi: memeAbi ,
+                args: [name, symbol, BigInt(initialSupply), metadataUrl],
+                bytecode: bytecode as `0x${string}`,
+                account: account
+            });
             // 获取交易哈希
             setTransactionHash(hash);
             alert('Contract deployed successfully!');
