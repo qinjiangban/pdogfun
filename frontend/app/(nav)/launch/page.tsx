@@ -8,7 +8,9 @@ import { storageClient } from '@/lib/StorageNode';
 import { LensSVG } from '@/gui/LensSVG';
 import { FaSquareXTwitter, FaTelegram } from 'react-icons/fa6';
 import { RiGlobalLine } from 'react-icons/ri';
-import { account, walletClient } from '@/config/walletClient';
+//import { account, walletClient } from '@/config/walletClient';
+import { createWalletClient, custom } from 'viem';
+import { chains } from '@lens-network/sdk/viem';
 
 export default function page() {
     const { address } = useAccount({ config });
@@ -36,6 +38,32 @@ export default function page() {
         logo: false,
     });
 
+    const [walletClient, setWalletClient] = useState<any>(null);
+    const [account, setAccount] = useState<string | null>(null);
+
+    // 初始化钱包客户端和账户
+    useEffect(() => {
+        const initializeWalletClient = async () => {
+            if (typeof window !== 'undefined' && window.ethereum) {
+                // 请求用户的账户
+                const [userAccount] = await window.ethereum.request({
+                    method: "eth_requestAccounts",
+                });
+                setAccount(userAccount);
+
+                const client = createWalletClient({
+                    account: userAccount,
+                    chain: chains.testnet,
+                    transport: custom(window.ethereum),
+                });
+                setWalletClient(client);
+            }
+        };
+
+        initializeWalletClient();
+    }, []);
+
+     // 表单输入验证
     const validateInputs = () => {
         const newErrors = {
             name: !name.trim(),
