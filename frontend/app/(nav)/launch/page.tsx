@@ -4,11 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { bytecode, memeAbi } from '../../../database/meme';
 import { config } from '@/config/Provider';
-import { storageClient } from '@/lib/StorageNode';
+import { storageClient } from '@/lib/storageClient';
 import { LensSVG } from '@/gui/LensSVG';
 import { FaSquareXTwitter, FaTelegram } from 'react-icons/fa6';
 import { RiGlobalLine } from 'react-icons/ri';
-import { account, walletClient } from '@/config/walletClient';
+import { account, walletClient } from '@/lib/walletClient';
 //import { account, walletClient } from '@/config/walletClient';
 
 
@@ -41,7 +41,7 @@ export default function page() {
 
 
 
-     // 表单输入验证
+    // 表单输入验证
     const validateInputs = () => {
         const newErrors = {
             name: !name.trim(),
@@ -76,7 +76,7 @@ export default function page() {
         }
     };
 
-    const handleLaunch =  async () => {
+    const handleLaunch = async () => {
         if (!validateInputs()) {
             alert('Please fill in all required fields.');
             return;

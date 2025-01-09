@@ -1,8 +1,8 @@
 
 
 import { LensSVG } from "@/gui/LensSVG";
-import { storageClient } from "@/lib/StorageNode";
-import {  } from "@/utils/truncatedAddress";
+import { storageClient } from "@/lib/storageClient";
+import { } from "@/utils/truncatedAddress";
 import Link from "next/link";
 import { FaSquareXTwitter, FaTelegram } from "react-icons/fa6";
 import { RiGlobalLine } from "react-icons/ri";
@@ -30,7 +30,7 @@ export default async function page({ params }) {
             placeholder="Input Name"
             value={data.name && data.name}
             className="input input-bordered w-full"
-            disabled 
+            disabled
           />
         </div>
 
@@ -42,7 +42,7 @@ export default async function page({ params }) {
             placeholder="Input Symbol"
             value={data.symbol && data.symbol}
             className="input input-bordered w-full"
-            disabled 
+            disabled
           />
         </div>
 
@@ -54,7 +54,7 @@ export default async function page({ params }) {
             placeholder="0"
             value={data.initialSupply}
             className="input input-bordered w-full"
-            disabled 
+            disabled
           />
         </div>
 
@@ -72,7 +72,7 @@ export default async function page({ params }) {
           <label className="block mb-1 font-semibold">Logo</label>
           {data.logo &&
             <Link href={data.logo} target='_blank' className="max-w-32 max-h-32 ">
-              <img src={data.logo} alt="Logo"  className=" max-w-32 max-h-32 rounded-md border hover:border-primary"/>
+              <img src={data.logo} alt="Logo" className=" max-w-32 max-h-32 rounded-md border hover:border-primary" />
             </Link>
           }
         </div>
