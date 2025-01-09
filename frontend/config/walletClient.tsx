@@ -1,17 +1,38 @@
-'use client'
+// lib/walletClient.ts
 import "viem/window";
-
 import { Address, createWalletClient, custom } from "viem";
 import { chains } from "@lens-network/sdk/viem";
 
-// For more information on hoisting accounts,
-// visit: https://viem.sh/docs/accounts/local.html#optional-hoist-the-account
-export const [account] = (await window.ethereum!.request({
-  method: "eth_requestAccounts",
-})) as [Address];
 
-export const walletClient = createWalletClient({
-  account,
-  chain: chains.testnet,
-  transport: custom(window.ethereum!),
-});
+export const getWalletClient = async () => {
+  if (!window.ethereum) {
+    throw new Error("MetaMask is not available");
+  }
+
+  const [address] = (await window.ethereum.request({
+    method: "eth_requestAccounts",
+  })) as [Address];
+
+  return createWalletClient({
+    account: address,
+    chain: chains.testnet,
+    transport: custom(window.ethereum),
+  });
+  
+};
+
+export const walletClient = await getWalletClient();
+export const [account] = await walletClient.getAddresses();
+
+
+export const getAccountAndSigner = async () => {
+  return {
+    account,
+    signer: {
+      signMessage: (message: string) =>
+        walletClient.signMessage({ account, message }),
+    },
+  };
+};
+
+export const { signer } = await getAccountAndSigner();
