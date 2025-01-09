@@ -9,7 +9,7 @@ import { LensSVG } from '@/gui/LensSVG';
 import { FaSquareXTwitter, FaTelegram } from 'react-icons/fa6';
 import { RiGlobalLine } from 'react-icons/ri';
 //import { account, walletClient } from '@/config/walletClient';
-import { createWalletClient, custom } from 'viem';
+import { Address, createWalletClient, custom } from 'viem';
 import { chains } from '@lens-network/sdk/viem';
 
 export default function page() {
@@ -46,13 +46,13 @@ export default function page() {
         const initializeWalletClient = async () => {
             if (typeof window !== 'undefined' && window.ethereum) {
                 // 请求用户的账户
-                const [userAccount] = await window.ethereum.request({
+                const [account] = (await window.ethereum.request({
                     method: "eth_requestAccounts",
-                });
-                setAccount(userAccount);
+                })) as [Address];
+                setAccount(account);
 
                 const client = createWalletClient({
-                    account: userAccount,
+                    account,
                     chain: chains.testnet,
                     transport: custom(window.ethereum),
                 });
