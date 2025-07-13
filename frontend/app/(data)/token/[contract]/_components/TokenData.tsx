@@ -6,7 +6,7 @@ import { RiGlobalLine } from "react-icons/ri";
 
 export default async function TokenData({ params }) {
 
-  const response = await fetch(`https://storage-api.testnet.lens.dev/${params.contract}`);
+  const response = await fetch(`https://api.grove.storage/${params.contract}`);
   const data = await response.json();
 
 

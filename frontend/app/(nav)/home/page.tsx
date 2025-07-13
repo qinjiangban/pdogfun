@@ -1,43 +1,17 @@
 'use client'
 import { useEffect, useState } from "react";
 import Link from "next/link";
-
-<div className="flex w-52 flex-col gap-4">
-    <div className="flex items-center gap-4">
-        <div className="skeleton h-16 w-16 shrink-0 rounded-full"></div>
-        <div className="flex flex-col gap-4">
-            <div className="skeleton h-4 w-20"></div>
-            <div className="skeleton h-4 w-28"></div>
-        </div>
-    </div>
-    <div className="skeleton h-32 w-full"></div>
-</div>
+import { LensGroveTokenManager, TokenData } from '@/lib/tokenStorage';
 
 export default function Page() {
-    const [data, setData] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true); // 用于表示加载状态
+    const [tokens, setTokens] = useState<TokenData[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
-    const lens_storage_key = [
-        '611d657a1b8c4921e052516e8f8530264379ec3e25ea4290b7a165c3dc76caac',
-        '9194f5df569c8939c6874cfe28a7272688fb85c5043aaef336040e9fec33c00c',
-        '6012d9c3f99d0ef2c47d1712f14709aac0a2fd8f3af66d13e37ace2c5c81b393',
-        '7d04f9c3e545d210a10a4fea253f655566dd704847f073eb1fd317f90d803f9e',
-        'a48c4e7576a1a43f3eae9ceff82bec0d9fbdf1f32dfaaf71279ddfaafacb7e63',
-        '140017a19ef9c5a724061bdbab37d995101cdced22213812bce8ee43c5ea32b9',
-        '1100ad7fbfb9c0c97a666566d5b65bd82627c8d7f3154d62b817ee181074af9e',
-        '52643af1b2c4e7e74de0ea5459c09e74dba222963e5f9af75402bf9db897b955',
-        'c60d4996937e45d3c6b7e214535e3e74279a5beff282ee38c878070651673fb7',
-        'cc9038bb5affdb7af0418d615ed598f033509d4ff5341bb58f0740f51f6ba431',
-        '7277d2e8d1c2eda9828c256166503285169e7970dd6780f3a0d52437e631476b',
-        '11c4aaea7d7b99fcfa3e17b588a3bd965b9c0d7eca1fa9c535ca9f818c04db29',
-        '33ecce2f42f147990e021f781785ce69f578a7465fa0d0734ad14523a4eef91d',
-        '6ded1fd3ed3334aa28d5d0663578c4d1666c279410a5728033380a6118c12d63',
-        '6ded1fd3ed3334aa28d5d0663578c4d1666c279410a5728033380a6118c12d63',
-        '6ded1fd3ed3334aa28d5d0663578c4d1666c279410a5728033380a6118c12d63',
-        '6ded1fd3ed3334aa28d5d0663578c4d1666c279410a5728033380a6118c12d63',
-
-
+    // 现有的硬编码数据作为默认数据
+    const existing_lens_storage_keys = [
+        '08158b51bfa2e165a000fe26cd723a49dafa4553cced69f0f7330ea6a55c900d',
     ];
 
 
@@ -45,39 +19,103 @@ export default function Page() {
         setCurrentPage(page);
     };
 
-    useEffect(() => {
-        async function fetchData() {
-            try {
-                const responses = await Promise.all(
-                    lens_storage_key.map((key) =>
-                        fetch(`https://storage-api.testnet.lens.dev/${key}`).then((res) => {
-                            if (!res.ok) {
-                                throw new Error(`HTTP error! status: ${res.status}`);
+    // 获取所有代币数据
+    const loadTokens = async () => {
+        try {
+            const allTokens = await LensGroveTokenManager.getAllTokens();
+            
+            // 如果Lens Grove中没有数据，尝试从现有的存储键获取数据
+            if (allTokens.length === 0) {
+                const fallbackData = await Promise.all(
+                    existing_lens_storage_keys.map(async (key) => {
+                        try {
+                            const response = await fetch(`https://api.grove.storage/${key}`);
+                            if (response.ok) {
+                                const data = await response.json();
+                                return {
+                                    contractAddress: 'unknown',
+                                    name: data.name || 'Unknown',
+                                    symbol: data.symbol || 'UNK',
+                                    initialSupply: data.initialSupply || 0,
+                                    bio: data.bio || '',
+                                    logo: data.logo || '',
+                                    webSite: data.webSite || '',
+                                    lensSite: data.lensSite || '',
+                                    xSite: data.xSite || '',
+                                    telegramSite: data.telegramSite || '',
+                                    metadataUri: key,
+                                    transactionHash: '',
+                                    createdAt: new Date().toISOString(),
+                                    creator: 'unknown'
+                                } as TokenData;
                             }
-                            return res.json();
-                        })
-                    )
+                            return null;
+                        } catch (error) {
+                            console.error(`Error fetching fallback data for ${key}:`, error);
+                            return null;
+                        }
+                    })
                 );
-                setData(responses);
-            } catch (error) {
-                console.error("Failed to fetch data:", error);
-            } finally {
-                setIsLoading(false);
+                const validFallbackData = fallbackData.filter(token => token !== null) as TokenData[];
+                setTokens(validFallbackData);
+            } else {
+                setTokens(allTokens);
             }
+        } catch (error) {
+            console.error('Error loading tokens:', error);
+            setTokens([]);
         }
+    };
 
-        fetchData();
+    // 刷新数据
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        setIsLoading(true);
+        try {
+            await loadTokens();
+        } catch (error) {
+            console.error('Error refreshing data:', error);
+        } finally {
+            setIsRefreshing(false);
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        const initializeData = async () => {
+            await loadTokens();
+            setIsLoading(false);
+        };
+
+        initializeData();
     }, []);
 
     const PAGE_SIZE = 15;
-    const totalPages = Math.ceil(lens_storage_key.length / PAGE_SIZE);
-    const paginatedData = data.slice(
+    const totalPages = Math.ceil(tokens.length / PAGE_SIZE);
+    const paginatedTokens = tokens.slice(
         (currentPage - 1) * PAGE_SIZE,
         currentPage * PAGE_SIZE
     );
 
     return (
         <div className="min-h-[calc(100vh-64px)] p-2 md:p-4">
+            {/* 刷新按钮 */}
+            <div className="flex justify-center mb-4">
+                <button 
+                    className="btn btn-primary" 
+                    onClick={handleRefresh}
+                    disabled={isRefreshing}
+                >
+                    {isRefreshing ? (
+                        <>
+                            <span className="loading loading-spinner loading-sm"></span>
+                            刷新中...
+                        </>
+                    ) : (
+                        '刷新代币列表'
+                    )}
+                </button>
+            </div>
             <div className="place-items-center grid grid-flow-row grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
                 {isLoading
                     ? Array.from({ length: PAGE_SIZE }).map((_, index) => (
@@ -104,27 +142,37 @@ export default function Page() {
                             </div>
                         </div>
                     ))
-                    : paginatedData.map((token, key) => (
+                    : paginatedTokens.map((token, index) => (
                         <Link
-                            href={`/token/${lens_storage_key[key]}`}
+                            href={`/token/${token.contractAddress !== 'unknown' ? token.contractAddress : token.metadataUri}`}
                             className="flex flex-col xs:flex-row bg-base-100 rounded-2xl shadow-md max-h-64 min-h-32 w-full hover:bg-[var(--button-bg)]"
-                            key={token.key}
+                            key={token.contractAddress || token.metadataUri || index}
                         >
                             <figure className="p-2 min-h-32 flex items-center justify-center">
                                 <img
-                                    src={token.logo}
+                                    src={token.logo || '/placeholder-token.png'}
                                     alt={token.symbol}
-                                    className="bg-black min-w-24 max-w-32 max-h-32 rounded-2xl"
+                                    className="bg-black min-w-24 max-w-32 max-h-32 rounded-2xl object-cover"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = '/placeholder-token.png';
+                                    }}
                                 />
                             </figure>
-                            <div className="p-2">
-                                <h2>
-                                    {token.symbol}{" "}
+                            <div className="p-2 flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <h2 className="font-bold">{token.symbol}</h2>
                                     <span className="text-sm text-base-content/60">{token.name}</span>
-                                </h2>
-                                <p className="line-clamp-2 text-ellipsis overflow-hidden">
+                                </div>
+                                <p className="line-clamp-2 text-ellipsis overflow-hidden text-sm mb-2">
                                     {token.bio}
                                 </p>
+                                <div className="flex items-center gap-2 text-xs text-base-content/40">
+                                    <span>供应量: {token.initialSupply?.toLocaleString()}</span>
+                                    {token.contractAddress !== 'unknown' && (
+                                        <span>• {token.contractAddress.slice(0, 6)}...{token.contractAddress.slice(-4)}</span>
+                                    )}
+                                </div>
                             </div>
                         </Link>
                     ))}

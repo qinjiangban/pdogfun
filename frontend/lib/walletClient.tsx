@@ -1,7 +1,7 @@
 // lib/walletClient.ts
 import "viem/window";
 import { Address, createWalletClient, custom } from "viem";
-import { chains } from "@lens-network/sdk/viem";
+import { chains } from "@lens-chain/sdk/viem";
 
 
 export const getWalletClient = async () => {

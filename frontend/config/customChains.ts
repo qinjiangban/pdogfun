@@ -10,10 +10,10 @@ export const lenstestnet: Chain = {
     symbol: "GRASS",
   },
   rpcUrls: {
-    default: { http: ["https://rpc.testnet.lens.dev"] },
+    default: { http: ["https://rpc.testnet.lens.xyz"] },
   },
   blockExplorers: {
-    default: { name: "Lens Block Explorer", url: "https://block-explorer.testnet.lens.dev" },
+    default: { name: "Lens Test Explorer", url: "https://explorer.testnet.lens.xyz" },
   },
   testnet: true,
 };

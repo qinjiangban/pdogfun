@@ -10,7 +10,7 @@ import { RiGlobalLine } from "react-icons/ri";
 export default async function page({ params }) {
   const metadataUrl = storageClient.resolve(`${params.key}`);
 
-  const response = await fetch(`https://storage-api.testnet.lens.dev/${params.key}`);
+  const response = await fetch(`https://api.grove.storage/${params.key}`);
 
 
   const data = await response.json();

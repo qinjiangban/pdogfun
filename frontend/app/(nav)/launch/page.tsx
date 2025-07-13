@@ -2,13 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { bytecode, memeAbi } from '../../../database/meme';
+import { Bytecode, memeAbi } from '../../../database/meme';
 import { config } from '@/config/Provider';
 import { storageClient } from '@/lib/storageClient';
 import { LensSVG } from '@/gui/LensSVG';
 import { FaSquareXTwitter, FaTelegram } from 'react-icons/fa6';
 import { RiGlobalLine } from 'react-icons/ri';
 import { account, walletClient } from '@/lib/walletClient';
+import { chains } from '@lens-chain/sdk/viem';
+import { lensAccountOnly } from '@lens-chain/storage-client';
+import { LensGroveTokenManager, TokenData } from '@/lib/tokenStorage';
 //import { account, walletClient } from '@/config/walletClient';
 
 
@@ -86,11 +89,14 @@ export default function page() {
         let uploadedLogoUrl = logoUrl; // 记录上传的 Logo URL
 
         try {
+            // 创建ACL配置，使用当前钱包地址
+            const acl = lensAccountOnly(address!, chains.testnet.id);
+
             // 如果有选择 Logo 文件，则上传
             const logoInput = document.querySelector<HTMLInputElement>('input[name="logo"]');
             if (logoInput?.files && logoInput.files[0]) {
                 const file = logoInput.files[0];
-                const { uri } = await storageClient.uploadFile(file);
+                const { uri } = await storageClient.uploadFile(file, { acl });
                 uploadedLogoUrl = await storageClient.resolve(uri);
                 setLogoUrlDisplay(uploadedLogoUrl); // 更新展示用的 logo URL
             }
@@ -109,18 +115,65 @@ export default function page() {
             };
 
             // 上传 Metadata JSON
-            const { uri } = await storageClient.uploadAsJson(jsonData);
+            const { uri } = await storageClient.uploadAsJson(jsonData, { acl });
             const metadataUrl = await storageClient.resolve(uri);
             setMetadataUrlDisplay(metadataUrl); // 更新展示用的 metadata URL
 
             // 部署 ERC20 合约
             const hash = await walletClient.deployContract({
                 abi: memeAbi,
-                args: [name, symbol, BigInt(initialSupply), metadataUrl],
-                bytecode: bytecode,
+                args: [
+                    name,
+                    symbol,
+                    BigInt(initialSupply),
+                    metadataUrl,
+                    uploadedLogoUrl,
+                    bio,
+                    webSite,
+                    lensSite,
+                    xSite,
+                    telegramSite
+                ],
+                bytecode: `0x${Bytecode}`,
             });
             // 获取交易哈希
             setTransactionHash(hash);
+            
+            // 等待交易确认并获取合约地址
+            const receipt = await walletClient.waitForTransactionReceipt({ hash });
+            const contractAddress = receipt.contractAddress;
+            
+            // 保存代币数据到Lens Grove
+            try {
+                const logoStorageKey = logoInput?.files && logoInput.files[0] ? 
+                    (await storageClient.uploadFile(logoInput.files[0], { acl })).uri : null;
+                
+                const tokenData: TokenData = {
+                    contractAddress: contractAddress!,
+                    name,
+                    symbol,
+                    initialSupply,
+                    bio,
+                    logo: uploadedLogoUrl,
+                    logoStorageKey,
+                    webSite,
+                    lensSite,
+                    xSite,
+                    telegramSite,
+                    metadataUri: uri,
+                    metadataStorageKey: uri,
+                    transactionHash: hash,
+                    createdAt: new Date().toISOString(),
+                    creator: address!
+                };
+                
+                await LensGroveTokenManager.saveTokenToList(tokenData, address!);
+                console.log('Token data saved to Lens Grove successfully');
+            } catch (saveError) {
+                console.error('Error saving token data to Lens Grove:', saveError);
+                // 不影响主流程，只记录错误
+            }
+            
             alert('Contract deployed successfully!');
         } catch (error) {
             console.error('Error during launch:', error);
@@ -282,7 +335,7 @@ export default function page() {
                 {transactionHash && (
                     <div className="text-center mt-6">
                         <p>Contract successfully deployed! View your contract transaction:</p>
-                        <a href={`https://block-explorer.testnet.lens.dev/tx/${transactionHash}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                        <a href={`https://explorer.testnet.lens.xyz/tx/${transactionHash}`} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
                             {transactionHash}
                         </a>
                     </div>

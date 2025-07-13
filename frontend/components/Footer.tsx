@@ -10,7 +10,7 @@ export default function Footer() {
             <footer className="footer bg-base-100 text-content items-center p-4 border-t gap-4 sm:grid-flow-col">
 
                 <nav className="grid-flow-col gap-4 sm:place-self-center sm:justify-self-start ">
-                    <Link href="https://share.lens.xyz/u/lens/pdogfun" className="hover:text-primary " target='_blank'>
+                    <Link href="https://hey.xyz/u/pdogfun" className="hover:text-primary " target='_blank'>
                         <LensSVG />
                     </Link>
                     <Link href="https://github.com/qinjiangban/pdogfun" className="hover:text-primary " target='_blank'>

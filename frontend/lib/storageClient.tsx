@@ -1,4 +1,4 @@
 'use client'
-import { StorageClient, testnet } from "@lens-protocol/storage-node-client";
+import { StorageClient } from "@lens-chain/storage-client";
 
-export const storageClient = StorageClient.create(testnet);
+export const storageClient = StorageClient.create();
